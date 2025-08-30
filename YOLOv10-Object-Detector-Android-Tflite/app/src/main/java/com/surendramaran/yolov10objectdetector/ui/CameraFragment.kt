@@ -27,6 +27,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.surendramaran.yolov10objectdetector.BoundingBox
 import com.surendramaran.yolov10objectdetector.Constants.LABELS_PATH
 import com.surendramaran.yolov10objectdetector.Constants.MODEL_PATH
+import com.surendramaran.yolov10objectdetector.Constants.OLD_MODEL_PATH_FOR_METADATA
 import com.surendramaran.yolov10objectdetector.Detector
 import com.surendramaran.yolov10objectdetector.databinding.FragmentCameraBinding
 import com.surendramaran.yolov10objectdetector.ui.Animation.animateArrow
@@ -62,9 +63,9 @@ class CameraFragment : Fragment(), Detector.DetectorListener {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         cameraExecutor.execute {
-            detector = Detector(requireContext(), MODEL_PATH, LABELS_PATH, this) {
-                toast(it)
-            }
+            detector = Detector(requireContext(), MODEL_PATH, LABELS_PATH, this, { message ->
+                toast(message)
+            }, OLD_MODEL_PATH_FOR_METADATA)
         }
 
         if (allPermissionsGranted()) {

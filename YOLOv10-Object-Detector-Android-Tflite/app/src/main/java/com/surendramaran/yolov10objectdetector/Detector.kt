@@ -21,7 +21,8 @@ class Detector(
     private val modelPath: String,
     private val labelPath: String?,
     private val detectorListener: DetectorListener,
-    private val message: (String) -> Unit
+    private val message: (String) -> Unit,
+    private val metadataModelPath: String? = null
 ) {
     private var interpreter: Interpreter
     private var labels = mutableListOf<String>()
@@ -44,7 +45,14 @@ class Detector(
         val model = FileUtil.loadMappedFile(context, modelPath)
         interpreter = Interpreter(model, options)
 
-        labels.addAll(extractNamesFromMetadata(model))
+        // Try to extract metadata from the old model if provided
+        val metadataModel = if (metadataModelPath != null) {
+            FileUtil.loadMappedFile(context, metadataModelPath)
+        } else {
+            model
+        }
+
+        labels.addAll(extractNamesFromMetadata(metadataModel))
         if (labels.isEmpty()) {
             if (labelPath == null) {
                 message("Model not contains metadata, provide LABELS_PATH in Constants.kt")
